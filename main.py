@@ -1,5 +1,9 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
+
+if not os.path.exists('graphs'):
+    os.mkdir('graphs')
 
 
 G = nx.Graph()
