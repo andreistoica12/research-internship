@@ -18,9 +18,9 @@ git clone https://github.com/andreistoica12/research-internship.git
 cd research-internship/
 ```
 
-4. Switch to the WICO branch.
+4. Switch to the covaxxy branch.
 ```
-git checkout WICO
+git checkout covaxxy
 ```
 
 5. Use the package manager [pip](https://pip.pypa.io/en/stable/) to install `virtualenv`.
