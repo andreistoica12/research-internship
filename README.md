@@ -1,4 +1,7 @@
-### Useful installation steps if running the notebook from VS Code, using a WSL: Ubuntu remote session
+### Useful installation steps if running the notebook locally, using a virtual environment
+
+## Dataset
+You can find the dataset at the following location: https://drive.google.com/drive/folders/1fMUQKWYj1e0awDQnHa8DUuspP6jjcAz7?usp=share_link
 
 
 ## Build and run the project
