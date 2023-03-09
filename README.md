@@ -1,7 +1,9 @@
 ### Useful installation steps if running the notebook locally, using a virtual environment
 
 ## Dataset
-You can find the dataset at the following location: https://drive.google.com/drive/folders/1fMUQKWYj1e0awDQnHa8DUuspP6jjcAz7?usp=share_link
+You can find the dataset at the following location: https://drive.google.com/drive/folders/1Xm3Z0qgIEZvmgefEs6gkn4xFCElqeoEj?usp=share_link
+
+Please contact me at a.stoica@student.rug.nl if you cannot access the dataset.
 
 
 ## Build and run the project
@@ -23,7 +25,7 @@ cd research-internship/
 
 4. Switch to the covaxxy branch.
 ```
-git checkout covaxxy
+git checkout pheme
 ```
 
 5. Use the package manager [pip](https://pip.pypa.io/en/stable/) to install `virtualenv`.
