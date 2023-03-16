@@ -1,2 +1,5 @@
-venv/
+.vscode/
+data/
+files/
 graphs/
+venv/
