@@ -1,7 +1,5 @@
 .vscode/
 data/
-files/
 graphs/
 SentiStrength/
-tokenizers/
 venv/
