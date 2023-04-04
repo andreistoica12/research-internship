@@ -1,3 +1,4 @@
+altgraph==0.17.3
 anyascii==0.3.2
 anyio==3.6.2
 argon2-cffi==21.3.0
@@ -14,6 +15,7 @@ comm==0.1.2
 contourpy==1.0.7
 contractions==0.1.73
 cycler==0.11.0
+Cython==0.29.34
 debugpy==1.6.6
 decorator==5.1.1
 defusedxml==0.7.1
@@ -77,6 +79,8 @@ pure-eval==0.2.2
 pyahocorasick==2.0.0
 pycparser==2.21
 Pygments==2.14.0
+pyinstaller==5.9.0
+pyinstaller-hooks-contrib==2023.1
 pyparsing==3.0.9
 pyrsistent==0.19.3
 python-dateutil==2.8.2
