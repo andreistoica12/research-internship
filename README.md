@@ -46,3 +46,7 @@ pip install -r requirements.txt
 ```
 
 9. Select the virtual environment you just created as the kernel (from VS Code). Easily run and debug cells.
+
+
+
+<!-- TODO: adapt commands for Windows and check if htey are correct for both Linux and Windows -->
