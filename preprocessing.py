@@ -223,17 +223,21 @@ def main():
     files_path = rootdir_path + f'{path_separator}files'
 
     print('Importing data from files...')
-    days = create_days_sequential(raw_data_path)
+    days = create_days_parallel(raw_data_path)
+    # # In case the parallel algorithm doesn't complete, you can try running the sequential version.
+    # # Results will be the same, albeit the computation time will be longer.
+    # days = create_days_sequential(raw_data_path)
     print(f'Total number of tweets is: {count_tweets(days)}')
 
     sorted_dates_datetimes = sorted([ datetime.strptime(date_string, '%d-%m-%Y') for date_string in days.keys() ])
     formatted_sorted_dates = [ date_object.strftime('%d-%m-%Y') for date_object in sorted_dates_datetimes ]
-    with open(files_path + f'{path_separator}unique_dates.txt', 'w') as f:
+    number_of_days = f'{len(formatted_sorted_dates)}_days'
+    with open(files_path + f'{path_separator}unique_dates_{number_of_days}.txt', 'w') as f:
         for date in formatted_sorted_dates:
             f.write(date + f' - {len(days[date])} tweets\n')
 
     merged_days = create_merged_days(days)
-    merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged.csv', index=False)
+    merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv', index=False)
     print('Merged file with all data saved locally.')
 
 
