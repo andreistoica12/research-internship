@@ -237,10 +237,10 @@ def main():
             f.write(date + f' - {len(days[date])} tweets\n')
 
     merged_days = create_merged_days(days)
+    # merged_days = merged_days.head(500000)
 
-    merged_days = merged_days.head(500000)
-    merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_test.csv', index=False)
-    # merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv', index=False)
+    merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv', index=False)
+    # merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_test.csv', index=False)
     print('Merged file with all data saved locally.')
 
 
