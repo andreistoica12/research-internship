@@ -346,8 +346,11 @@ def create_all_OC(merged_days, stop_words, senti, reaction_types_full_list, opin
 
 
 def main():
+    # Check the operating system of the host machine,
+    # so that we can treat the path separator correctly.
     path_separator_Windows = "\\"
     path_separator = '/' if platform.system() == 'Linux' else path_separator_Windows
+    
     # root directory of the Linux university cluster
     rootdir_path = '/home1/s4915372/research-internship'
 
@@ -365,10 +368,23 @@ def main():
     opinion_changes_path = files_path + f'{path_separator}opinion-changes-{number_of_days}'
     # opinion_changes_path = files_path + f'{path_separator}opinion-changes-test'
 
+    # Replace with the path to the folder where the SentiStrength library is stored.
+    # NOTE: Due to their policy, the Java version of the library (the one I am using) 
+    # is only free for academic use. Therefore, I could not make it publicly available. 
+    # If you wish to use the free library (for academic purposes), I will gladly 
+    # redirect you to the author at M.Thelwall@wlv.ac.uk . 
+    # More information is available at: http://sentistrength.wlv.ac.uk/
     path_to_sentistrength = rootdir_path + f'{path_separator}SentiStrength'
+    # Replace with the path to the Java executable file of SentiStrength.
     path_to_sentistrength_jar = path_to_sentistrength + f'{path_separator}SentiStrengthCom.jar'
+    # Replace with the path to the language folder, 
+    # which is used along with the .jar file to compute sentiment scores.
     path_to_sentistrength_language_folder = path_to_sentistrength + f'{path_separator}LanguageFolder'
 
+    # Due to the general nature of the NLTK built-in stop words list, 
+    # most words could actually have an impact in the computation of sentiment scores 
+    # if removed from the texts (e.g. "all" or "not"), thus I decided against using this pre-defined list. 
+    # Instead I created a custom list of stop words, which can be found at the following relative location:
     path_to_stopwords = files_path + f"{path_separator}stopwords.txt"
     stop_words = custom_stop_words(path_to_stopwords)
 
