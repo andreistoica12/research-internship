@@ -56,7 +56,8 @@ def create_all_days_per_file_sequential(raw_data_path):
     Returns:
         dict: dictionary with keys as numerical indexes and values as dictionaries
     """    
-    # In order to read the data from the files, I need the paths of the files to be passed on to the read_csv() function. 
+    # In order to read the data from the files, 
+    # I need the paths of the files to be passed on to the read_csv() function. 
     file_paths = [ os.path.join(raw_data_path, file) for file in os.listdir(raw_data_path) ]
 
     # I decided to store the datasets per file in a dictionary, because it is faster to work with than a list.
@@ -95,7 +96,8 @@ def create_days_sequential(raw_data_path):
         days = {k: pd.concat([days.get(k, pd.DataFrame()), days_for_one_file.get(k, pd.DataFrame())]) 
                 for k in set(days) | set(days_for_one_file)}
 
-    # Dictionary comprehension to format datetime object keys to strings - useful for ease of accessing further down the line.
+    # Dictionary comprehension to format datetime object keys to strings
+    #  - useful for ease of accessing further down the line.
     days = {datetime_key.strftime('%d-%m-%Y'): df for datetime_key, df in days.items()}
 
     # Iterate over all the keys in the dictionary
@@ -119,7 +121,8 @@ def create_days_parallel(data_path):
     Returns:
         dict: dictionary containing the merged/concatenated days dictionary, based on all available files
     """    
-    # In order to read the data from the files, I need the paths of the files to be passed on to the read_csv() function. 
+    # In order to read the data from the files, 
+    # I need the paths of the files to be passed on to the read_csv() function. 
     file_paths = [ os.path.join(data_path, file) for file in os.listdir(data_path) ]
 
     # Set the number of processes to run in parallel
@@ -134,9 +137,11 @@ def create_days_parallel(data_path):
     # Loop that merges all separate days dictionaries obtained after running the parallel computation
     # into one final dictionary, associated with all available data.
     for result in results:
-        days = {k: pd.concat([days.get(k, pd.DataFrame()), result.get(k, pd.DataFrame())]) for k in set(days) | set(result)}
+        days = {k: pd.concat([days.get(k, pd.DataFrame()), result.get(k, pd.DataFrame())]) 
+                for k in set(days) | set(result)}
 
-    # Dictionary comprehension to format datetime object keys to strings - useful for ease of accessing further down the line.
+    # Dictionary comprehension to format datetime object keys to strings 
+    # - useful for ease of accessing further down the line.
     days = {datetime_key.strftime('%d-%m-%Y'): df for datetime_key, df in days.items()}
 
     # Iterate over all the keys in the dictionary
@@ -185,7 +190,8 @@ def create_merged_days(days):
         except ValueError:
             return reference_id
 
-    # change the data type of the 'reference_id' column from string to int - where possible (the '#' values remain the same)
+    # change the data type of the 'reference_id' column from string to int - 
+    # where possible (the '#' values remain the same)
     merged_days['reference_id'] = merged_days['reference_id'].apply(string_to_int)
 
     return merged_days
@@ -217,7 +223,11 @@ def main():
     path_separator_Windows = "\\"
     path_separator = '/' if platform.system() == 'Linux' else path_separator_Windows
 
-    rootdir_path = os.getcwd()
+    # root directory of the Linux university cluster
+    rootdir_path = '/home1/s4915372/research-internship'
+
+    # # root directory of the project - if your local machine has enough resources to run the script 
+    # rootdir_path = os.getcwd()
 
     raw_data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy-csv'
     files_path = rootdir_path + f'{path_separator}files'
@@ -239,7 +249,8 @@ def main():
     merged_days = create_merged_days(days)
     # merged_days = merged_days.head(500000)
 
-    merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv', index=False)
+    merged_days.to_csv(rootdir_path + 
+                       f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv', index=False)
     # merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_test.csv', index=False)
     print('Merged file with all data saved locally.')
 
