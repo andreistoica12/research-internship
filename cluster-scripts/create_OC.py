@@ -338,42 +338,77 @@ def create_all_OC(merged_days, stop_words, senti, reaction_types_full_list, opin
 
 def main():
     # Check the operating system of the host machine,
-    # so that we can treat the path separator correctly.
+    # so that I can treat the path separator correctly.
     path_separator_Windows = "\\"
     path_separator = '/' if platform.system() == 'Linux' else path_separator_Windows
 
 
-    # Create an argument parser
+    # The root directory of the project should be 1 level above the preprocessing Python script
+    # in the directory tree => parent level.
+
+    # absolute path of the directory containing the (current) preprocessing Python script
+    # (path to the cluster-scripts directory)
+    cluster_scripts_path = os.path.dirname(os.path.abspath(__file__))
+    # parent level directory - root directory of the project
+    rootdir_path = os.path.dirname(cluster_scripts_path)
+
+    files_path = rootdir_path + f'{path_separator}files'
+
+
+    reaction_types_full_list = [['quoted'], 
+                            ['quoted', 'retweeted'], 
+                            ['replied_to'], 
+                            ['replied_to', 'quoted'], 
+                            ['replied_to', 'quoted', 'retweeted'],
+                            ['replied_to', 'retweeted']]
+    
+
+    # In order to avoid boilerplate code, I decided to add some command line arguments when running
+    # this script, instead of creating a separte, almost identical, file for each (combination of) reaction types.
+    # The arguments are: --input, --output, --reactions_index .
+    # This way, if the user wishes to run the script in a terminal window, he/she can specify these
+    # arguments themselves. The steps to parse the command line arguments are the following:
+    # 1. Create an argument parser
     parser = argparse.ArgumentParser()
 
-    # Add arguments for input CSV file, output folder, and the variable
+    # 2. Add arguments for: input CSV file, output folder and the reactions_index variable
     parser.add_argument('--input', type=str, help='Input CSV file path')
     parser.add_argument('--output', type=str, help='Output folder path')
     parser.add_argument('--reactions_index', type=int, default=2, help='The type of reactions we consider')
 
-    # Parse the command-line arguments
+    # 3. Parse the command-line arguments
     args = parser.parse_args()
+
     data_path = args.input
     opinion_changes_path = args.output
-
-
+    # Instead of creating all files at once, I decided to create them one at a time, due to memory restrictions.
+    # More specifically, the univeristy cluster's resource scheduler needs me to specify the memory is should allocate
+    # beforehand. Because the script initially created all files at once, I needed to reserve a lot of memory,
+    # so the SLURM job would be scheduled too late. This was not necessary, because for each file, most operations
+    # need to be performed again, there is no global state variable which can be reused. 
+    # This is why I opted for the following option.
+    reaction_types = reaction_types_full_list[args.reactions_index]
+    print(f'Reactions considered: {reaction_types}')
     
-    # # root directory of the Linux university cluster for my account
-    # rootdir_path = '/home1/s4915372/research-internship'
 
-    # root directory of the project - if your local machine has enough resources to run the script 
-    rootdir_path = os.getcwd()
 
-    dataset_possibilities = ['15_days', '25_days']
-    number_of_days = dataset_possibilities[1]
 
-    files_path = rootdir_path + f'{path_separator}files'
+    # If you do not wish to specify command line arguments when running the Python script or 
+    # you do not run the script in a terminal window, you can set the paths to the source data file
+    # and to the output folder, as well as the type of reactions considered, manually.
+
+    # dataset_possibilities = ['15_days', '25_days']
+    # number_of_days = dataset_possibilities[1]
 
     # data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv'
     # data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_test.csv'
 
     # opinion_changes_path = files_path + f'{path_separator}opinion-changes-{number_of_days}'
     # opinion_changes_path = files_path + f'{path_separator}opinion-changes-test'
+
+    # reaction_types = reaction_types_full_list[2]
+
+
 
     # Replace with the path to the folder where the SentiStrength library is stored.
     # NOTE: Due to their policy, the Java version of the library (the one I am using) 
@@ -402,26 +437,6 @@ def main():
     senti = PySentiStr()
     senti.setSentiStrengthPath(path_to_sentistrength_jar)
     senti.setSentiStrengthLanguageFolderPath(path_to_sentistrength_language_folder)
-
-
-    reaction_types_full_list = [['quoted'], 
-                            ['quoted', 'retweeted'], 
-                            ['replied_to'], 
-                            ['replied_to', 'quoted'], 
-                            ['replied_to', 'quoted', 'retweeted'],
-                            ['replied_to', 'retweeted']]
-
-
-
-    # Instead of creating all files at once, I decided to create them one at a time, due to memory restrictions.
-    # More specifically, the univeristy cluster's resource scheduler needs me to specify the memory is should allocate
-    # beforehand. Because the script initially created all files at once, I needed to reserve a lot of memory,
-    # so thre job would be scheduled too late. This was not necessary, because for each file, most operations
-    # need to be performed again, there is no global state variable which can be reused. 
-    # This is why I opted for the following option.
-    reaction_types = reaction_types_full_list[args.reactions_index]
-    print(f'Reactions considered: {reaction_types}')
-
 
     groups_of_reactions = group_reactions(merged_days, reaction_types)
     print('Reactions grouped')
