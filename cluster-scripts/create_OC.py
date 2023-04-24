@@ -410,11 +410,6 @@ def main():
                             ['replied_to', 'quoted'], 
                             ['replied_to', 'quoted', 'retweeted'],
                             ['replied_to', 'retweeted']]
-    
-
-
-    # # Create all opinion changes files, corresponding to all combinations of reaction types, all at once
-    # create_all_OC(merged_days, stop_words, senti, reaction_types_full_list, opinion_changes_path, path_separator)
 
 
 
