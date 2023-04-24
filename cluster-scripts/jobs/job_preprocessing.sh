@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=preproc
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128G
-#SBATCH --time=2:00:00
+#SBATCH --cpus-per-task=128
+#SBATCH --mem=256G
+#SBATCH --time=5:00:00
 #SBATCH --output=output.log
 #SBATCH --error=error.log
 #SBATCH --partition=regular

@@ -1,24 +1,15 @@
 import platform
 import os
+import json
 import numpy as np
 import pandas as pd
 import multiprocessing
-from multiprocessing import Pool
-
+import argparse
 from sentistrength import PySentiStr
-
 import re
 import contractions
-import nltk
-nltk.download('stopwords')
-from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import nltk.data
-nltk.download('punkt')
-# Load the punkt tokenizer data from the local directory
-# nltk.data.load(f'tokenizers{path_separator}punkt{path_separator}english.pickle')
 
-import json
 
 
 def custom_stop_words(path_to_stopwords):
@@ -296,12 +287,12 @@ def process_dict_in_parallel(input_dict, merged_days, stop_words, senti, num_pro
     # Default to using all available CPU cores
     if num_processes is None:
         num_processes = multiprocessing.cpu_count()
-    print(f'Chose number of processes: {num_processes}')
+    print(f'Number of processes (also number of CPU-s of machine): {num_processes}')
 
     # Split the input dictionary into smaller chunks for parallel processing
     chunk_size = len(input_dict) // num_processes if len(input_dict) // num_processes != 0 else 1
     input_chunks = [dict(list(input_dict.items())[i:i + chunk_size]) for i in range(0, len(input_dict), chunk_size)]
-    print(f'Splitted input dictionary into {len(input_chunks)} chunks of size {chunk_size}')
+    print(f'Size of chunk processed by 1 thread: {chunk_size}')
 
     args = []
     for input_chunk in input_chunks:
@@ -350,22 +341,38 @@ def main():
     # so that we can treat the path separator correctly.
     path_separator_Windows = "\\"
     path_separator = '/' if platform.system() == 'Linux' else path_separator_Windows
-    
-    # root directory of the Linux university cluster
-    rootdir_path = '/home1/s4915372/research-internship'
 
-    # # root directory of the project - if your local machine has enough resources to run the script 
-    # rootdir_path = os.getcwd()
+
+    # Create an argument parser
+    parser = argparse.ArgumentParser()
+
+    # Add arguments for input CSV file, output folder, and the variable
+    parser.add_argument('--input', type=str, help='Input CSV file path')
+    parser.add_argument('--output', type=str, help='Output folder path')
+    parser.add_argument('--reactions_index', type=int, default=2, help='The type of reactions we consider')
+
+    # Parse the command-line arguments
+    args = parser.parse_args()
+    data_path = args.input
+    opinion_changes_path = args.output
+
+
+    
+    # # root directory of the Linux university cluster for my account
+    # rootdir_path = '/home1/s4915372/research-internship'
+
+    # root directory of the project - if your local machine has enough resources to run the script 
+    rootdir_path = os.getcwd()
 
     dataset_possibilities = ['15_days', '25_days']
     number_of_days = dataset_possibilities[1]
 
     files_path = rootdir_path + f'{path_separator}files'
 
-    data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv'
+    # data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv'
     # data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_test.csv'
 
-    opinion_changes_path = files_path + f'{path_separator}opinion-changes-{number_of_days}'
+    # opinion_changes_path = files_path + f'{path_separator}opinion-changes-{number_of_days}'
     # opinion_changes_path = files_path + f'{path_separator}opinion-changes-test'
 
     # Replace with the path to the folder where the SentiStrength library is stored.
@@ -389,7 +396,13 @@ def main():
     stop_words = custom_stop_words(path_to_stopwords)
 
     merged_days = pd.read_csv(data_path)
+    print('Data read from CSV file')
     merged_days['reference_id'] = merged_days['reference_id'].apply(string_to_int)
+
+    senti = PySentiStr()
+    senti.setSentiStrengthPath(path_to_sentistrength_jar)
+    senti.setSentiStrengthLanguageFolderPath(path_to_sentistrength_language_folder)
+
 
     reaction_types_full_list = [['quoted'], 
                             ['quoted', 'retweeted'], 
@@ -398,14 +411,11 @@ def main():
                             ['replied_to', 'quoted', 'retweeted'],
                             ['replied_to', 'retweeted']]
     
-    senti = PySentiStr()
-    senti.setSentiStrengthPath(path_to_sentistrength_jar)
-    senti.setSentiStrengthLanguageFolderPath(path_to_sentistrength_language_folder)
-
 
 
     # # Create all opinion changes files, corresponding to all combinations of reaction types, all at once
     # create_all_OC(merged_days, stop_words, senti, reaction_types_full_list, opinion_changes_path, path_separator)
+
 
 
     # Instead of creating all files at once, I decided to create them one at a time, due to memory restrictions.
@@ -414,11 +424,16 @@ def main():
     # so thre job would be scheduled too late. This was not necessary, because for each file, most operations
     # need to be performed again, there is no global state variable which can be reused. 
     # This is why I opted for the following option.
-    reaction_types = reaction_types_full_list[4]
+    reaction_types = reaction_types_full_list[args.reactions_index]
+    print(f'Reactions considered: {reaction_types}')
+
 
     groups_of_reactions = group_reactions(merged_days, reaction_types)
+    print('Reactions grouped')
     opinion_changes_parallel = process_dict_in_parallel(groups_of_reactions, merged_days, stop_words, senti)
+    print('Opinion changes processed in parallel')
     save_opinion_changes_to_JSON(opinion_changes_parallel, reaction_types, opinion_changes_path, path_separator)
+    print('Opinion changes saved to JSON')
 
 
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=repl_qu
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=128
 #SBATCH --mem=256G
-#SBATCH --time=4:00:00
+#SBATCH --time=5:00:00
 #SBATCH --output=output.log
 #SBATCH --error=error.log
 #SBATCH --partition=regular
@@ -21,7 +21,7 @@ source $HOME/.envs/first_env/bin/activate
 # Install required packages from requirements.txt
 pip install -r $HOME/research-internship/requirements.txt
 
-python3 /home1/s4915372/research-internship/cluster-scripts/create-OC/create_OC_replied_to_quoted.py --input /home1/s4915372/research-internship/data/covaxxy_merged_25_days.csv --output /home1/s4915372/research-internship/files/opinion-changes-25_days/
+python3 /home1/s4915372/research-internship/cluster-scripts/create_OC.py --reactions_index 3 --input /home1/s4915372/research-internship/data/covaxxy_merged_25_days.csv --output /home1/s4915372/research-internship/files/opinion-changes-25_days/
 
 # Deactivate virtual environment
 deactivate

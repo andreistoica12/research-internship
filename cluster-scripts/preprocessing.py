@@ -223,11 +223,18 @@ def main():
     path_separator_Windows = "\\"
     path_separator = '/' if platform.system() == 'Linux' else path_separator_Windows
 
-    # root directory of the Linux university cluster
-    rootdir_path = '/home1/s4915372/research-internship'
+    # The root directory of the project should be 1 level above the preprocessing Python script
+    # in the directory tree, so parent level.
 
-    # # root directory of the project - if your local machine has enough resources to run the script 
-    # rootdir_path = os.getcwd()
+    # absolute path of the directory containing the (current) preprocessing Python script
+    # (path to the cluster-scripts directory)
+    cluster_scripts_path = os.path.dirname(os.path.abspath(__file__))
+    # parent level directory - root directory of the project
+    rootdir_path = os.path.dirname(cluster_scripts_path)
+
+    # NOTE: If this script is located in a different relative location to the root directory of the project,
+    # you need to set the root directory path accordingly.
+
 
     raw_data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy-csv'
     files_path = rootdir_path + f'{path_separator}files'
