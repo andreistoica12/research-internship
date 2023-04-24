@@ -21,7 +21,7 @@ source $HOME/.envs/first_env/bin/activate
 # Install required packages from requirements.txt
 pip install -r $HOME/research-internship/requirements.txt
 
-python3 /home1/s4915372/research-internship/cluster-scripts/preprocessing.py --input /home1/s4915372/research-internship/data/covaxxy_csv/ --output /home1/s4915372/research-internship/data/
+python3 /home1/s4915372/research-internship/cluster-scripts/preprocessing.py --input /home1/s4915372/research-internship/data/covaxxy-csv --output /home1/s4915372/research-internship/data
 
 # Deactivate virtual environment
 deactivate

@@ -21,7 +21,7 @@ source $HOME/.envs/first_env/bin/activate
 # Install required packages from requirements.txt
 pip install -r $HOME/research-internship/requirements.txt
 
-python3 /home1/s4915372/research-internship/cluster-scripts/create_OC.py --reactions_index 0 --input /home1/s4915372/research-internship/data/covaxxy_merged_25_days.csv --output /home1/s4915372/research-internship/files/opinion-changes-25_days/
+python3 /home1/s4915372/research-internship/cluster-scripts/create_OC.py --reactions_index 0 --input /home1/s4915372/research-internship/data/covaxxy_merged_25_days.csv --output /home1/s4915372/research-internship/files/opinion-changes-25_days
 
 # Deactivate virtual environment
 deactivate

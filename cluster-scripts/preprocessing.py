@@ -1,9 +1,9 @@
-import pandas as pd
 import os
+import pandas as pd
 from datetime import datetime
-import platform
 import multiprocessing
 from multiprocessing import Pool
+import argparse
 
 
 def df_to_dict_with_date_keys(csv_path):
@@ -112,18 +112,18 @@ def create_days_sequential(raw_data_path):
 
 
 
-def create_days_parallel(data_path):
+def create_days_parallel(raw_data_path):
     """Function to create the merged days dictionary, performed using parallel computation.
 
     Args:
-        data_path (str): path to the folder where the .csv files are stored
+        raw_data_path (str): path to the folder where the .csv files are stored
 
     Returns:
         dict: dictionary containing the merged/concatenated days dictionary, based on all available files
     """    
     # In order to read the data from the files, 
     # I need the paths of the files to be passed on to the read_csv() function. 
-    file_paths = [ os.path.join(data_path, file) for file in os.listdir(data_path) ]
+    file_paths = [ os.path.join(raw_data_path, file) for file in os.listdir(raw_data_path) ]
 
     # Set the number of processes to run in parallel
     num_processes = multiprocessing.cpu_count() * 2
@@ -132,7 +132,7 @@ def create_days_parallel(data_path):
         # Use the pool to execute the filter_df_by_date function on each file in parallel
         results = pool.map(df_to_dict_with_date_keys, file_paths)
 
-    print(f'Obtained all results from parallel executions, now merging...\n')
+    print(f'Obtained all results from parallel executions, now merging...')
     days = dict()
     # Loop that merges all separate days dictionaries obtained after running the parallel computation
     # into one final dictionary, associated with all available data.
@@ -219,10 +219,6 @@ def count_tweets(days):
 
 
 def main():
-
-    path_separator_Windows = "\\"
-    path_separator = '/' if platform.system() == 'Linux' else path_separator_Windows
-
     # The root directory of the project should be 1 level above the preprocessing Python script
     # in the directory tree, so parent level.
 
@@ -232,12 +228,35 @@ def main():
     # parent level directory - root directory of the project
     rootdir_path = os.path.dirname(cluster_scripts_path)
 
+    files_path = os.path.join(rootdir_path, 'files')
+
+
     # NOTE: If this script is located in a different relative location to the root directory of the project,
     # you need to set the root directory path accordingly.
 
+    # In order to offer flexibility when it comed to where each user wishes to store the data,
+    # I decided to add some command line arguments when running this script: --input, --output .
+    # This way, if the user wishes to run the script in a terminal window, he/she can specify these
+    # arguments themselves. The steps to parse the command line arguments are the following:
+    # 1. Create an argument parser
+    parser = argparse.ArgumentParser()
 
-    raw_data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy-csv'
-    files_path = rootdir_path + f'{path_separator}files'
+    # 2. Add arguments for: input folder woth all the .csv files, output (data) folder
+    parser.add_argument('--input', type=str, help='Input folder path, storing all the .csv files')
+    parser.add_argument('--output', type=str, help='Root data folder path')
+
+    # 3. Parse the command-line arguments
+    args = parser.parse_args()
+
+    raw_data_path = args.input
+    data_path = args.output
+
+    # If you do not wish to specify command line arguments when running the Python script or 
+    # you do not run the script in a terminal window, you can set the paths to the
+    # raw data (all the .csv files) and the root folder of the data manually, as follows:
+
+    # raw_data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy-csv'
+    # data_path = rootdir_path + f'{path_separator}data'
 
     print('Importing data from files...')
     days = create_days_parallel(raw_data_path)
@@ -249,16 +268,15 @@ def main():
     sorted_dates_datetimes = sorted([ datetime.strptime(date_string, '%d-%m-%Y') for date_string in days.keys() ])
     formatted_sorted_dates = [ date_object.strftime('%d-%m-%Y') for date_object in sorted_dates_datetimes ]
     number_of_days = f'{len(formatted_sorted_dates)}_days'
-    with open(files_path + f'{path_separator}unique_dates_{number_of_days}.txt', 'w') as f:
+    with open(os.path.join(files_path, f'unique_dates_{number_of_days}.txt'), 'w') as f:
         for date in formatted_sorted_dates:
             f.write(date + f' - {len(days[date])} tweets\n')
 
     merged_days = create_merged_days(days)
     # merged_days = merged_days.head(500000)
 
-    merged_days.to_csv(rootdir_path + 
-                       f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv', index=False)
-    # merged_days.to_csv(rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_test.csv', index=False)
+    merged_days.to_csv(os.path.join(data_path, f'covaxxy_merged_{number_of_days}.csv'), index=False)
+    # merged_days.to_csv(os.path.join(data_path, 'covaxxy_merged_test.csv'), index=False)
     print('Merged file with all data saved locally.')
 
 

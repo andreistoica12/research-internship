@@ -1,4 +1,3 @@
-import platform
 import os
 import json
 import numpy as np
@@ -132,7 +131,7 @@ def string_to_int(reference_id):
 
 
 
-def create_path_to_opinion_changes(reaction_types, opinion_changes_path, path_separator):
+def create_path_to_opinion_changes(reaction_types, opinion_changes_path):
     """Function to create the path to the opinion changes JSON file, based on the reaction types we took into consideration.
 
     Args:
@@ -142,7 +141,7 @@ def create_path_to_opinion_changes(reaction_types, opinion_changes_path, path_se
         str: path to the opinion changes file
     """    
     type = "_".join(reaction_types)
-    path = opinion_changes_path + f"{path_separator}{type}_OC.json"
+    path = os.path.join(opinion_changes_path, f'{type}_OC.json')
 
     return path
 
@@ -311,14 +310,14 @@ def process_dict_in_parallel(input_dict, merged_days, stop_words, senti, num_pro
 
 
 
-def save_opinion_changes_to_JSON(opinion_changes, reaction_types, opinion_changes_path, path_separator):
+def save_opinion_changes_to_JSON(opinion_changes, reaction_types, opinion_changes_path):
     """Function to save the dictionary of opinion changes to a JSON file.
 
     Args:
         opinion_changes (dict): dictionary with opinion changes
         reaction_types (list): list of reaction types
     """    
-    path = create_path_to_opinion_changes(reaction_types, opinion_changes_path, path_separator)
+    path = create_path_to_opinion_changes(reaction_types, opinion_changes_path)
 
     # create a new dictionary with string keys
     opinion_changes_for_JSON_file = {str(key): value for key, value in opinion_changes.items() }
@@ -327,20 +326,20 @@ def save_opinion_changes_to_JSON(opinion_changes, reaction_types, opinion_change
 
 
 
-def create_all_OC(merged_days, stop_words, senti, reaction_types_full_list, opinion_changes_path, path_separator):
+def create_all_OC(merged_days, stop_words, senti, reaction_types_full_list, opinion_changes_path):
     for reaction_types in reaction_types_full_list:
         groups_of_reactions = group_reactions(merged_days, reaction_types)
         opinion_changes_parallel = process_dict_in_parallel(groups_of_reactions, merged_days, stop_words, senti)
-        save_opinion_changes_to_JSON(opinion_changes_parallel, reaction_types, opinion_changes_path, path_separator)
+        save_opinion_changes_to_JSON(opinion_changes_parallel, reaction_types, opinion_changes_path)
 
 
 
 
 def main():
-    # Check the operating system of the host machine,
-    # so that I can treat the path separator correctly.
-    path_separator_Windows = "\\"
-    path_separator = '/' if platform.system() == 'Linux' else path_separator_Windows
+    # # Check the operating system of the host machine,
+    # # so that I can treat the path separator correctly.
+    # path_separator_Windows = "\\"
+    # path_separator = '/' if platform.system() == 'Linux' else path_separator_Windows
 
 
     # The root directory of the project should be 1 level above the preprocessing Python script
@@ -352,7 +351,7 @@ def main():
     # parent level directory - root directory of the project
     rootdir_path = os.path.dirname(cluster_scripts_path)
 
-    files_path = rootdir_path + f'{path_separator}files'
+    files_path = os.path.join(rootdir_path, 'files')
 
 
     reaction_types_full_list = [['quoted'], 
@@ -400,11 +399,11 @@ def main():
     # dataset_possibilities = ['15_days', '25_days']
     # number_of_days = dataset_possibilities[1]
 
-    # data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_{number_of_days}.csv'
-    # data_path = rootdir_path + f'{path_separator}data{path_separator}covaxxy_merged_test.csv'
+    # data_path = os.path.join(rootdir_path, 'data', f'covaxxy_merged_{number_of_days}.csv')
+    # data_path = os.path.join(rootdir_path, 'data', 'covaxxy_merged_test.csv')
 
-    # opinion_changes_path = files_path + f'{path_separator}opinion-changes-{number_of_days}'
-    # opinion_changes_path = files_path + f'{path_separator}opinion-changes-test'
+    # opinion_changes_path = os.path.join(files_path, f'opinion-changes-{number_of_days}')
+    # opinion_changes_path = os.path.join(files_path, 'opinion-changes-test')
 
     # reaction_types = reaction_types_full_list[2]
 
@@ -416,18 +415,18 @@ def main():
     # If you wish to use the free library (for academic purposes), I will gladly 
     # redirect you to the author at M.Thelwall@wlv.ac.uk . 
     # More information is available at: http://sentistrength.wlv.ac.uk/
-    path_to_sentistrength = rootdir_path + f'{path_separator}SentiStrength'
+    path_to_sentistrength = os.path.join(rootdir_path, 'SentiStrength')
     # Replace with the path to the Java executable file of SentiStrength.
-    path_to_sentistrength_jar = path_to_sentistrength + f'{path_separator}SentiStrengthCom.jar'
+    path_to_sentistrength_jar = os.path.join(path_to_sentistrength, 'SentiStrengthCom.jar')
     # Replace with the path to the language folder, 
     # which is used along with the .jar file to compute sentiment scores.
-    path_to_sentistrength_language_folder = path_to_sentistrength + f'{path_separator}LanguageFolder'
+    path_to_sentistrength_language_folder = os.path.join(path_to_sentistrength, 'LanguageFolder')
 
     # Due to the general nature of the NLTK built-in stop words list, 
     # most words could actually have an impact in the computation of sentiment scores 
     # if removed from the texts (e.g. "all" or "not"), thus I decided against using this pre-defined list. 
     # Instead I created a custom list of stop words, which can be found at the following relative location:
-    path_to_stopwords = files_path + f"{path_separator}stopwords.txt"
+    path_to_stopwords = os.path.join(files_path, 'stopwords.txt')
     stop_words = custom_stop_words(path_to_stopwords)
 
     merged_days = pd.read_csv(data_path)
@@ -442,7 +441,7 @@ def main():
     print('Reactions grouped')
     opinion_changes_parallel = process_dict_in_parallel(groups_of_reactions, merged_days, stop_words, senti)
     print('Opinion changes processed in parallel')
-    save_opinion_changes_to_JSON(opinion_changes_parallel, reaction_types, opinion_changes_path, path_separator)
+    save_opinion_changes_to_JSON(opinion_changes_parallel, reaction_types, opinion_changes_path)
     print('Opinion changes saved to JSON')
 
 
