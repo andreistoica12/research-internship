@@ -234,14 +234,14 @@ def main():
     # NOTE: If this script is located in a different relative location to the root directory of the project,
     # you need to set the root directory path accordingly.
 
-    # In order to offer flexibility when it comed to where each user wishes to store the data,
+    # In order to offer flexibility when it comes to where each user wishes to store the data,
     # I decided to add some command line arguments when running this script: --input, --output .
     # This way, if the user wishes to run the script in a terminal window, he/she can specify these
     # arguments themselves. The steps to parse the command line arguments are the following:
     # 1. Create an argument parser
     parser = argparse.ArgumentParser()
 
-    # 2. Add arguments for: input folder woth all the .csv files, output (data) folder
+    # 2. Add arguments for: input folder with all the .csv files, output (data) folder
     parser.add_argument('--input', type=str, help='Input folder path, storing all the .csv files')
     parser.add_argument('--output', type=str, help='Root data folder path')
 
