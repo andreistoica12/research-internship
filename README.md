@@ -1,9 +1,7 @@
 ### Useful installation steps if running the notebook locally, using a virtual environment
 
 ## Dataset
-You can find the dataset at the following location: https://drive.google.com/drive/folders/1STOuEdg7i1MHbuc4geU6DOA5kaPZ7JFw?usp=share_link
-
-Please contact me at a.stoica@student.rug.nl if you cannot access the dataset.
+Due to the authors' requirement, the dataset cannot not be made publicly available. However, if you wish to gain access to the dataset, you can contact me at a.stoica@student.rug.nl .
 
 ## Build and run the project
 
