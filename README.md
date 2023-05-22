@@ -3,8 +3,6 @@
 ## Dataset
 Due to the authors' requirement, the dataset cannot not be made publicly available. However, if you wish to gain access to the dataset, you can contact me at a.stoica@student.rug.nl .
 
-You can find the dataset at the following location: https://drive.google.com/drive/folders/1fMUQKWYj1e0awDQnHa8DUuspP6jjcAz7?usp=share_link
-
 
 ## Build and run the project
 
